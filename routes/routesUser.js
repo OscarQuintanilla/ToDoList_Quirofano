@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const User = mongoose.model('user');
 
 module.exports = app => {
+
+  app.get('/', (req, res) => {
+    res.send({ 'hi': 'there' });
+  });
+
   app.get('/user/getAll', (req, res) => {
     User.find()
       .then((userList) => {
