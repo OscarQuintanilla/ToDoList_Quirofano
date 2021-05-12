@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
 const keys = require('./config/keys');
 
 require('./models/User');
@@ -9,6 +10,7 @@ require('./models/Category');
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(morgan('dev'));
 mongoose.connect(keys.mongoURI);
 
 require('./routes/routesCategory')(app);

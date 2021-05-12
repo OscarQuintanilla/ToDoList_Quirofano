@@ -1,0 +1,19 @@
+section{
+  border:none;
+  border-radius: 1vh;
+  margin: 2vw;
+  box-sizing: border-box !important;
+}
+
+form{
+  border: solid 1px;
+  border-radius: 1vh;
+}
+
+.form-group{
+  margin: 2vh 0vh !important;
+}
+
+.btnLogin{
+  width: 100%;
+}
