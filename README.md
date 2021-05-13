@@ -27,6 +27,7 @@ Technologies used in this project:
 
 -Node + Express
 -React
+-Mongo DB
 
 Deploy Link:
 https://tranquil-chamber-05729.herokuapp.com
