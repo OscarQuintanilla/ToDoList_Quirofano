@@ -1,0 +1,12 @@
+.btnMenu{
+  text-align: center;
+  border: solid 1px #999;
+  padding: 5vw;
+  margin-top: 15vh;
+  min-width: 25vw;
+}
+
+a{
+  color: inherit !important;
+  text-decoration: none !important; 
+}
