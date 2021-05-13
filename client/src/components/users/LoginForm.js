@@ -23,9 +23,8 @@ class LoginForm extends React.Component {
             id: response.data._id
           }));
           console.log(sessionStorage.getItem('user'));
-          window.location.href = "/categories";
+          window.location.href = "/menu";
         }
-        //window.location.href = "/";
       }, (error) => {
         console.log(error.data.status);
         console.log("Usuario Incorrecto");

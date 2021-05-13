@@ -1,35 +1,28 @@
 import React from 'react';
 import axios from 'axios';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Dropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap';
 
-class categoryTable extends React.Component {
+class ListTable extends React.Component {
   state = {
-    payloadArrived: false,
-    delete: "",
     modalInsertar: false,
     modalEliminar: false,
     form: {
       id: '',
+      nameList: '',
+      category: '',
       user: '',
-      nameCategory: '',
+      items: [],
       oldName: '',
+      lengthitems: '',
     },
-    categoryList: [],
+    metaList: [],
+    dropdownOpen: false,
+    setDropdownOpen: false
   }
 
-  getCategoryList = () => {
-    axios.get('/api/category/getAll').then((response) => {
-      this.setState({
-        categoryList: response.data.categoryList,
-      });
-    }).catch(error => {
-      console.log(error.message);
-    })
-
-  }
-
-  componentDidMount() {
-    this.getCategoryList();
+  modalInsert = () => {
+    this.setState({ modalInsertar: !this.state.modalInsertar });
   }
 
   handleChange = e => {
@@ -41,73 +34,91 @@ class categoryTable extends React.Component {
     });
   }
 
-  modalInsert = () => {
-    this.setState({ modalInsertar: !this.state.modalInsertar });
+  getMetaList = () => {
+    axios.get('/list/getAll').then((response) => {
+      this.setState({
+        metaList: response.data.metaList
+      });
+      this.state.metaList.map(currentList => {
+        currentList.lengthitems = Object.keys(currentList.items).length;
+        console.log(currentList.lengthitems);
+        return 0;
+      });
+
+    }).catch((error) => {
+      console.log(error.message);
+    });
+
   }
 
-  insertCategory = () => {
-    axios.post('/api/category/insert',
-      {
-        nameCategory: this.state.form.nameCategory,
-        user: this.state.form.user
-      }
-    ).then(
+  insertList = () => {
+    axios.post('/list/insert', {
+      nameList: this.state.form.nameList,
+      category: this.state.form.category,
+      user: this.state.form.user,
+      items: this.state.form.items,
+    }).then(
       this.modalInsert(),
-      this.getCategoryList(),
+      this.getMetaList()
     )
-      .catch(console.log);
   }
 
-  deleteCategory = () => {
-    axios.delete('/api/category/delete', {
-      data:
-        { nameCategory: this.state.form.nameCategory }
-    })
+  updateList = () => {
+    axios.put('/list/update', {
+      nameList: this.state.form.nameList,
+      category: this.state.form.category,
+      user: this.state.form.user,
+      items: this.state.form.items,
+      oldName: this.state.form.nameList,
+    }).then(
+      this.modalInsert(),
+      this.getMetaList()
+    ).catch(console.log)
+  }
+
+  deleteList = () => {
+    axios.delete('/list/delete',
+      { data: { nameList: this.state.form.nameList } })
       .then(
         this.setState({
           modalEliminar: false
         }),
-        this.getCategoryList(),
-      );
+        this.getMetaList(),
+      ).catch(console.log);
   }
 
-  modifyCategory = () => {
-    axios.put('/api/category/update', {
-      id: this.state.form.id,
-      nameCategory: this.state.form.nameCategory,
-      oldName: this.state.form.oldName,
-    }
-    ).then(
-      this.modalInsert(),
-      this.getCategoryList(),
-    ).catch(console.log);
-  }
-
-  selectCategory = (category) => {
-    let cat = category;
+  selectList = (List) => {
+    let lis = List;
     this.setState({
       modalType: 'update',
       form: {
-        id: cat._id,
-        nameCategory: cat.nameCategory,
-        user: cat.user,
-        oldName: cat.nameCategory,
-      },
-    });
+        nameList: lis.nameList,
+        category: lis.category,
+        user: lis.user,
+        items: lis.items,
+      }
+    })
+  }
+
+  componentDidMount() {
+    this.getMetaList();
   }
 
   render() {
+
     let list;
     list =
       <tbody>
-        {this.state.categoryList.map((category) => {
+        {this.state.metaList.map((metaList) => {
           return (
-            <tr key={category._id}>
-              <th>{category.nameCategory}</th>
+            <tr key={metaList._id}>
+              <th>{metaList.nameList}</th>
+              <th>{metaList.category}</th>
+              <th>{Object.keys(metaList.items).length}</th>
               <th>
                 <button
                   className="btn btn-primary"
-                  onClick={() => { this.selectCategory(category); this.modalInsert() }}
+                  onClick={() => { this.selectCategory(metaList); this.modalInsert() }}
                 >
                   Modificar
                 </button>
@@ -115,7 +126,7 @@ class categoryTable extends React.Component {
               <th>
                 <button
                   className="btn btn-danger"
-                  onClick={() => { this.selectCategory(category); this.setState({ modalEliminar: true }) }}
+                  onClick={() => { this.selectCategory(metaList); this.setState({ modalEliminar: true }) }}
                 >
                   Eliminar
                 </button>
@@ -128,14 +139,14 @@ class categoryTable extends React.Component {
       <section>
         <div className="container">
           <div className="row">
-            <h1>Categorias</h1>
+            <h1>Listas</h1>
           </div>
           <div className="row d-flex justify-content-center">
             <div className="col-12 d-flex justify-content-center">
               <button
                 className="btn btn-success"
                 onClick={() => { this.setState({ form: null, tipoModal: 'insertar' }); this.modalInsert() }}>
-                Agregar Categoría
+                Agregar Listas
               </button>
 
             </div>
@@ -144,7 +155,9 @@ class categoryTable extends React.Component {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Nombre Categoría</th>
+                  <th>Nombre de la Lista</th>
+                  <th>Categoría</th>
+                  <th>Tareas Registradas</th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -157,7 +170,7 @@ class categoryTable extends React.Component {
           <ModalHeader style={{ display: 'block' }}>
             <div className="row">
               <div className="col-10">
-                <h3>Insertar Categoria</h3>
+                <h3>Crear Lista</h3>
               </div>
               <div className="col-2">
                 <span style={{ float: 'right' }} onClick={() => this.modalInsert()}>X</span>
@@ -175,16 +188,29 @@ class categoryTable extends React.Component {
                 readOnly onChange={this.handleChange}
                 value={this.state.form ? this.state.form.id : ""} />
               <br />
-              <label htmlFor="nombre">Usuraio</label>
-              <input className="form-control" type="text" name="user" id="nombre" readOnly onChange={this.handleChange} value={this.props.user} />
+              <label htmlFor="nombre">Usuario</label>
+              <input
+                className="form-control"
+                type="text"
+                name="user"
+                id="nombre"
+                readOnly
+                onChange={this.handleChange} value={this.props.user} />
               <br />
-              <label htmlFor="txtname">Nombre de la Categoría</label>
+              <label htmlFor="txtname">Nombre de la Lista</label>
               <input className="form-control"
                 type="text"
                 name="nameCategory"
                 id="txtnameCategory"
                 onChange={this.handleChange}
-                value={this.state.form ? this.state.form.nameCategory : ""} />
+                value={this.state.form ? this.state.form.nameList : ""} />
+              <label htmlFor="txtname">Selecciona una categoria</label>
+              <input className="form-control"
+                type="text"
+                name="nameCategory"
+                id="txtnameCategory"
+                onChange={this.handleChange}
+                value={this.state.form ? this.state.form.nameList : ""} />
             </div>
           </ModalBody>
           <ModalFooter>
@@ -210,8 +236,8 @@ class categoryTable extends React.Component {
         </Modal>
 
       </section>
-    )
+    );
   }
 }
 
-export default categoryTable;
+export default ListTable;
