@@ -1,28 +1,39 @@
 import React from 'react';
-
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 class SingUpForm extends React.Component {
-
   componentDidMount() {
-    axios.get('/category/getAll').then((response) => {
-      console.log(response.data.categoryList);
-    }).catch(console.log)
+    axios.get('/api/user/getAll').then((response) => {
+      console.log(response.data.userList);
+    }).catch(console.log);
+
   }
 
   handleClick = e => {
-    console.log('click');
-    //axios.post('/');
+    console.log(this.props.formValues);
+    axios.post('/api/user/insert',
+      {
+        user: this.props.formValues.user,
+        name: this.props.formValues.name,
+        job: this.props.formValues.job,
+        password: this.props.formValues.password
+      })
+      .then((response) => {
+        console.log(response.data.status);
+        window.location.href = "/";
+      }, (error) => {
+        console.log(error.data.status);
+      });
   }
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log('Form Submitted');
     console.log(this.state);
   };
 
   render() {
+
     return (
       <section >
         <div className="container">

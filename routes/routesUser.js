@@ -7,14 +7,22 @@ module.exports = app => {
     res.send({ 'hi': 'there' });
   });
 
-  app.get('/user/getAll', (req, res) => {
+  app.post('/api/user/login', (req, res) => {
+    User.findOne({ user: req.body.user, password: req.body.password })
+      .then((response) => {
+        console.log(response);
+        res.json(response);
+      })
+  });
+
+  app.get('/api/user/getAll', (req, res) => {
     User.find()
       .then((userList) => {
         res.json({ userList });
       });
   })
 
-  app.post('/user/insert', (req, res) => {
+  app.post('/api/user/insert', (req, res) => {
     User.findOne({ user: req.body.user })
       .then((userExist) => {
         if (userExist) {
@@ -23,14 +31,14 @@ module.exports = app => {
           new User({
             user: req.body.user,
             name: req.body.name,
-            pasword: req.body.password,
+            password: req.body.password,
             job: req.body.job
           }).save();
           res.json({ 'status': "true" });
         }
       })
   });
-  app.put('/user/update', (req, res) => {
+  app.put('/api/user/update', (req, res) => {
     User.findOne({ user: req.body.newuser })
       .then((userExist) => {
         if (userExist) {
@@ -49,7 +57,7 @@ module.exports = app => {
         }
       });
   });
-  app.delete('/user/delete', (req, res) => {
+  app.delete('/api/user/delete', (req, res) => {
     User.deleteOne({ user: req.body.user })
       .then((deletedUser) => {
         if (deletedUser) {

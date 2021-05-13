@@ -7,7 +7,7 @@ module.exports = function (app) {
     })
   );
   app.use(
-    ["/category/", "/category/*"],
+    ["/api/category/*", "/api/category/getAll"],
     createProxyMiddleware({
       target: "http://localhost:5000",
     })

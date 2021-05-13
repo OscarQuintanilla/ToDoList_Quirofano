@@ -9,43 +9,42 @@ module.exports = app => {
    * *false: it was already created
    */
 
-  app.get('/category/getAll', (req, res) => {
+  app.get('/api/category/getAll', (req, res) => {
     Category.find()
       .then((categoryList) => {
         res.json({ categoryList });
       });
   });
 
-  app.post('/category/insert', (req, res) => {
+  app.post('/api/category/insert', (req, res) => {
     Category.findOne({ nameCategory: req.body.nameCategory })
       .then((exitingCategory) => {
         if (exitingCategory) {
           //Prevents to repeat insertion
           res.json({ 'status': "false" });
         } else {
-          var data = new Category({ nameCategory: req.body.nameCategory });
+          var data = new Category({ nameCategory: req.body.nameCategory, user: req.body.user });
           data.save();
           console.log(data);
           res.json({ 'status': "true" });
         }
       });
   });
-  app.put('/category/update', (req, res) => {
-    Category.findOne({ nameCategory: req.body.newName })
+  app.put('/api/category/update', (req, res) => {
+    Category.findOne({ nameCategory: req.body.nameCategory })
       .then((existingCateogry) => {
         if (existingCateogry) {
           res.json({ 'status': "false" });
         } else {
-          Category.updateOne({ nameCategory: req.body.nameCategory }, { nameCategory: req.body.newName })
+          Category.updateOne({ nameCategory: req.body.oldName }, { nameCategory: req.body.nameCategory })
             .then((updatedCategory) => {
-              console.log(updatedCategory);
               res.json({ 'status': 'true' });
             });
         }
       });
   });
 
-  app.delete('/category/delete', (req, res) => {
+  app.delete('/api/category/delete', (req, res) => {
     Category.deleteOne({ nameCategory: req.body.nameCategory })
       .then((deletedCategory) => {
         if (deletedCategory) {
