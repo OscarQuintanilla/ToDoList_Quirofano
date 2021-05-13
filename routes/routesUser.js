@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 const User = mongoose.model('user');
 
 module.exports = app => {
-
-  app.get('/', (req, res) => {
-    res.send({ 'hi': 'there' });
-  });
-
   app.post('/api/user/login', (req, res) => {
     User.findOne({ user: req.body.user, password: req.body.password })
       .then((response) => {
